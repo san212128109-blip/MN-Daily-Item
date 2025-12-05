@@ -13,17 +13,24 @@ h2{text-align:center;color:#ff6f61;}
 input,select{width:100%;padding:10px;margin:8px 0;border-radius:6px;border:1px solid #ccc;}
 button{width:100%;padding:12px;background-color:#ff6f61;color:white;border:none;border-radius:6px;cursor:pointer;margin-top:10px;font-size:16px;}
 button:hover{background-color:#e55b50;}
-.product{display:flex;align-items:center;margin-bottom:15px;padding:10px;border:1px solid #ddd;border-radius:8px;}
-.product img{width:80px;height:80px;object-fit:cover;border-radius:8px;margin-right:10px;}
+#searchBox{width:100%;padding:10px;margin-bottom:12px;border-radius:10px;border:1px solid #ccc;font-size:14px;}
+#searchBox::placeholder{color:#aaa;}
+.product{display:flex;align-items:center;margin-bottom:15px;padding:12px;border:1px solid #ddd;border-radius:12px;transition:transform 0.2s,box-shadow 0.2s;}
+.product:hover{transform:scale(1.02);box-shadow:0 8px 16px rgba(0,0,0,0.15);}
+.product img{width:100px;height:100px;object-fit:cover;border-radius:10px;margin-right:12px;}
 .product-details{flex:1;}
-.cart{position:fixed;right:18px;bottom:18px;width:300px;max-width:94%;background:white;padding:12px;border-radius:12px;box-shadow:0 6px 14px rgba(2,6,23,0.1);}
+.product-details input{margin-bottom:6px;padding:6px;font-size:14px;}
+.product button{margin-top:8px;}
+.cart{position:fixed;right:18px;bottom:18px;width:300px;max-width:94%;background:white;padding:16px;border-radius:12px;box-shadow:0 6px 14px rgba(2,6,23,0.1);max-height:400px;overflow-y:auto;}
 .cart h3{margin:0 0 10px 0;}
 .cart-item{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
-.qty-controls button{margin:0 2px;padding:2px 6px;}
+.qty-controls button{background:#0ea5a4;color:white;border:none;border-radius:4px;cursor:pointer;margin:0 2px;padding:2px 6px;}
+.qty-controls button:hover{background:#028f8a;}
 #checkoutModal{position:fixed;inset:0;background:rgba(2,6,23,0.5);display:none;align-items:center;justify-content:center;padding:20px;}
-#checkoutModal .modal-content{background:white;padding:20px;border-radius:12px;max-width:400px;width:100%;}
+#checkoutModal .modal-content{background:white;padding:20px;border-radius:14px;max-width:400px;width:100%;}
+#checkoutModal h3{margin-top:0;color:#ff6f61;}
+#checkoutModal input{margin-bottom:10px;padding:10px;border-radius:8px;border:1px solid #ccc;}
 .message{text-align:center;margin-top:12px;color:green;}
-#searchBox{margin-bottom:10px;padding:8px;width:100%;border-radius:6px;border:1px solid #ccc;}
 </style>
 </head>
 <body>
@@ -84,16 +91,17 @@ button:hover{background-color:#e55b50;}
 const adminUser="admin";
 const adminPass="nafis128!@*";
 
-// Default products with images
+// Products with images
 let products=JSON.parse(localStorage.getItem('products'))||[
-{id:1,name:"পণ্য ১",price:100,img:"https://via.placeholder.com/80"},
-{id:2,name:"পণ্য ২",price:200,img:"https://via.placeholder.com/80"},
-{id:3,name:"পণ্য ৩",price:300,img:"https://via.placeholder.com/80"},
+{id:1,name:"পণ্য ১",price:100,img:"https://via.placeholder.com/100"},
+{id:2,name:"পণ্য ২",price:200,img:"https://via.placeholder.com/100"},
+{id:3,name:"পণ্য ৩",price:300,img:"https://via.placeholder.com/100"},
 ];
 
 // Cart
 let cart={};
 
+// Login
 function login(){
 const role=document.getElementById('role').value;
 const user=document.getElementById('username').value;
@@ -105,10 +113,7 @@ document.getElementById('loginContainer').style.display='none';
 document.getElementById('userPanel').style.display='block';
 document.getElementById('cartBox').style.display='none';
 showProducts(true);
-}else{
-msg.innerText="Username বা Password ভুল!";
-msg.style.color='red';
-}
+}else{msg.innerText="Username বা Password ভুল!"; msg.style.color='red';}
 }else{
 document.getElementById('loginContainer').style.display='none';
 document.getElementById('userPanel').style.display='block';
@@ -148,7 +153,7 @@ localStorage.setItem('products',JSON.stringify(products));
 alert(`Product updated! ✅\nName: ${name}\nPrice: ${price}`);
 }
 
-// CART FUNCTIONS
+// CART
 const cartItemsContainer=document.getElementById('cartItems');
 const cartTotalEl=document.getElementById('cartTotal');
 
@@ -221,19 +226,13 @@ const expiry=document.getElementById('expiry').value;
 const cvv=document.getElementById('cvv').value;
 
 if(!name||!number||!expiry||!cvv){
-messageEl.innerText='সব ফিল্ড পূরণ করো!';
-messageEl.style.color='red';
-return;
+messageEl.innerText='সব ফিল্ড পূরণ করো!'; messageEl.style.color='red'; return;
 }
-if(number.length!==16||cvv.length!==3){
-messageEl.innerText='কার্ড নাম্বার বা CVV ভুল!';
-messageEl.style.color='red';
-return;
-}
+if(number.length!==16||cvv.length!==3){messageEl.innerText='কার্ড নাম্বার বা CVV ভুল!'; messageEl.style.color='red'; return; }
 
-alert(`ধন্যবাদ ${checkoutForm.name.value}! আপনার অর্ডার নেওয়া হয়েছে।`);
-cart={};
-showCart();
+alert(`ধন্যবাদ ${checkoutForm.name.value}! আপনার অর্ডার নেওয়া হয়েছে।\nঅর্ডার কনফার্মেশন ফি: ৳70\nহোম ডেলিভারি: ফ্রি`);
+
+cart={}; showCart();
 checkoutModal.style.display='none';
 checkoutForm.reset();
 document.getElementById('cardName').value='';
