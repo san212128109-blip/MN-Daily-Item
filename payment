@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daraz-like Payment Add</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 350px;
+    }
+    h2 {
+      text-align: center;
+      color: #ff6f61;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #ff6f61;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #e55b50;
+    }
+    .message {
+      text-align: center;
+      margin-top: 12px;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Add Payment Method</h2>
+    <input type="text" id="cardName" placeholder="Cardholder Name">
+    <input type="text" id="cardNumber" placeholder="Card Number">
+    <input type="text" id="expiry" placeholder="MM/YY">
+    <input type="text" id="cvv" placeholder="CVV">
+    <button onclick="addPayment()">Add Card</button>
+    <div class="message" id="message"></div>
+  </div>
+
+  <script>
+    function addPayment() {
+      const name = document.getElementById('cardName').value;
+      const number = document.getElementById('cardNumber').value;
+      const expiry = document.getElementById('expiry').value;
+      const cvv = document.getElementById('cvv').value;
+
+      if (!name || !number || !expiry || !cvv) {
+        document.getElementById('message').innerText = 'সব ফিল্ড পূরণ করো!';
+        document.getElementById('message').style.color = 'red';
+        return;
+      }
+
+      // Simple validation simulation
+      if (number.length !== 16 || cvv.length !== 3) {
+        document.getElementById('message').innerText = 'কার্ড নাম্বার বা CVV ভুল!';
+        document.getElementById('message').style.color = 'red';
+        return;
+      }
+
+      document.getElementById('message').innerText = 'Payment Method Added Successfully ✅';
+      document.getElementById('message').style.color = 'green';
+
+      // Reset fields
+      document.getElementById('cardName').value = '';
+      document.getElementById('cardNumber').value = '';
+      document.getElementById('expiry').value = '';
+      document.getElementById('cvv').value = '';
+    }
+  </script>
+</body>
+</html>
