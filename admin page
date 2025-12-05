@@ -1,141 +1,240 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>সকল পণ্য</title>
-  <meta name="description" content="MN Daily Item - সকল পণ্য ও তথ্যের জন্য ওয়েবসাইট।">
-  <meta name="keywords" content="সকল পণ্য, Daily Item, পণ্য, খবর">
-  <meta name="robots" content="index, follow">
-  <meta name="author" content="MN Daily Item">
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Store",
-    "name": "MN Daily Item",
-    "description": "সকল পণ্য ও খবর সংক্রান্ত ওয়েবসাইট",
-    "url": "https://san212128109-blip.github.io/MN-Daily-Item/"
-  }
-  </script>
-  <style>
-    body { font-family: Arial, sans-serif; background-color: #f7f7f7; padding: 20px;}
-    .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom:20px;}
-    h2 { text-align: center; color: #ff6f61;}
-    input, select { width: 100%; padding: 10px; margin: 8px 0; border-radius: 6px; border: 1px solid #ccc;}
-    button { width: 100%; padding: 12px; background-color: #ff6f61; color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; font-size: 16px;}
-    button:hover { background-color: #e55b50;}
-    .product { margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
-    .message { text-align: center; margin-top: 10px; color: green; }
-    #intro { max-width:600px; margin:auto; background:#fff; padding:15px; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.1); margin-bottom:20px;}
-    footer { text-align:center; margin-top:30px; color:#555;}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MN Daily Items - Full</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;padding:0;background:#f7f7f7;}
+header{background:#06b6d4;color:white;padding:18px;text-align:center;}
+header h1{margin:0;font-size:24px;}
+.container{max-width:500px;margin:20px auto;background:white;padding:20px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+h2{text-align:center;color:#ff6f61;}
+input,select{width:100%;padding:10px;margin:8px 0;border-radius:6px;border:1px solid #ccc;}
+button{width:100%;padding:12px;background-color:#ff6f61;color:white;border:none;border-radius:6px;cursor:pointer;margin-top:10px;font-size:16px;}
+button:hover{background-color:#e55b50;}
+.product{margin-bottom:15px;padding:10px;border:1px solid #ddd;border-radius:8px;}
+.cart{position:fixed;right:18px;bottom:18px;width:300px;max-width:94%;background:white;padding:12px;border-radius:12px;box-shadow:0 6px 14px rgba(2,6,23,0.1);}
+.cart h3{margin:0 0 10px 0;}
+.cart-item{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.qty-controls button{margin:0 2px;padding:2px 6px;}
+#checkoutModal{position:fixed;inset:0;background:rgba(2,6,23,0.5);display:none;align-items:center;justify-content:center;padding:20px;}
+#checkoutModal .modal-content{background:white;padding:20px;border-radius:12px;max-width:400px;width:100%;}
+.message{text-align:center;margin-top:12px;color:green;}
+</style>
 </head>
 <body>
 
-<div id="intro">
-  <h2>স্বাগতম MN Daily Item-এ</h2>
-  <p>এখানে আপনি আমাদের সকল পণ্য দেখতে পাবেন। আমরা দৈনন্দিন নতুন পণ্য যুক্ত করি। Customer বা Admin হিসেবে লগইন করে পণ্য দেখুন এবং পরিবর্তন করুন।</p>
-</div>
+<header><h1>MN Daily Items</h1></header>
 
 <div class="container" id="loginContainer">
-  <h2>Login</h2>
-  <select id="role">
-    <option value="customer">Customer</option>
-    <option value="admin">Admin</option>
-  </select>
-  <input type="text" id="username" placeholder="Username">
-  <input type="password" id="password" placeholder="Password">
-  <button onclick="login()">Login</button>
-  <div class="message" id="loginMessage"></div>
+<h2>Login</h2>
+<select id="role">
+<option value="customer">Customer</option>
+<option value="admin">Admin</option>
+</select>
+<input type="text" id="username" placeholder="Username">
+<input type="password" id="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<div class="message" id="loginMessage"></div>
 </div>
 
 <div class="container" id="userPanel" style="display:none;">
-  <h2>Product List</h2>
-  <div>
-    <input type="text" id="searchBox" placeholder="পণ্যের নাম লিখুন..." onkeyup="searchProducts()">
-  </div>
-  <div id="products"></div>
+<h2>Products</h2>
+<div id="products"></div>
 </div>
 
-<footer>
-  &copy; 2025 MN Daily Item. All rights reserved.
-</footer>
+<div class="cart" id="cartBox" style="display:none;">
+<h3>Cart</h3>
+<div id="cartItems"></div>
+<div><strong>Total: ৳<span id="cartTotal">0</span></strong></div>
+<button id="checkoutBtn">Checkout</button>
+</div>
+
+<div id="checkoutModal">
+<div class="modal-content">
+<h2>Checkout & Payment</h2>
+<div id="checkoutStep1">
+<h3>Shipping Info</h3>
+<form id="checkoutForm">
+<input type="text" name="name" placeholder="Your Name" required>
+<input type="text" name="address" placeholder="Address" required>
+<button type="button" id="nextToPayment">Next: Payment</button>
+</form>
+</div>
+<div id="checkoutStep2" style="display:none;">
+<h3>Payment Method</h3>
+<input type="text" id="cardName" placeholder="Cardholder Name">
+<input type="text" id="cardNumber" placeholder="Card Number">
+<input type="text" id="expiry" placeholder="MM/YY">
+<input type="text" id="cvv" placeholder="CVV">
+<button onclick="placeOrder()">Place Order</button>
+<div class="message" id="message"></div>
+</div>
+<button type="button" id="cancelCheckout">Cancel</button>
+</div>
+</div>
 
 <script>
-  // Admin credentials
-  const adminUser = "admin";
-  const adminPass = "nafis128!@*";
+// Admin credentials
+const adminUser="admin";
+const adminPass="nafis128!@*";
 
-  // Default products
-  const defaultProducts = [
-    {id: 1, name: "পণ্য ১", price: 100},
-    {id: 2, name: "পণ্য ২", price: 200},
-    {id: 3, name: "পণ্য ৩", price: 300},
-  ];
+// Load products from LocalStorage or default
+let products=JSON.parse(localStorage.getItem('products'))||[
+{id:1,name:"পণ্য ১",price:100},
+{id:2,name:"পণ্য ২",price:200},
+{id:3,name:"পণ্য ৩",price:300},
+];
 
-  // Load products from LocalStorage or use default
-  let products = JSON.parse(localStorage.getItem('products')) || defaultProducts;
+let cart={};
 
-  function login() {
-    const role = document.getElementById('role').value;
-    const user = document.getElementById('username').value;
-    const pass = document.getElementById('password').value;
-    const msg = document.getElementById('loginMessage');
+function login(){
+const role=document.getElementById('role').value;
+const user=document.getElementById('username').value;
+const pass=document.getElementById('password').value;
+const msg=document.getElementById('loginMessage');
+if(role==="admin"){
+if(user===adminUser && pass===adminPass){
+document.getElementById('loginContainer').style.display='none';
+document.getElementById('userPanel').style.display='block';
+document.getElementById('cartBox').style.display='none';
+showProducts(true);
+}else{
+msg.innerText="Username বা Password ভুল!";
+msg.style.color='red';
+}
+}else{
+document.getElementById('loginContainer').style.display='none';
+document.getElementById('userPanel').style.display='block';
+document.getElementById('cartBox').style.display='block';
+showProducts(false);
+}
+}
 
-    if(role === "admin") {
-      if(user === adminUser && pass === adminPass){
-        document.getElementById('loginContainer').style.display = 'none';
-        document.getElementById('userPanel').style.display = 'block';
-        showProducts(true);
-      } else {
-        msg.innerText = "Username বা Password ভুল!";
-        msg.style.color = 'red';
-      }
-    } else {
-      document.getElementById('loginContainer').style.display = 'none';
-      document.getElementById('userPanel').style.display = 'block';
-      showProducts(false);
-    }
-  }
+function showProducts(isAdmin){
+let html='';
+products.forEach(p=>{
+html+=`<div class="product">
+Name: <input id="name-${p.id}" value="${p.name}" ${isAdmin?'':'disabled'}>
+Price: <input id="price-${p.id}" value="${p.price}" ${isAdmin?'':'disabled'}>`;
+if(isAdmin){
+html+=`<button onclick="updateProduct(${p.id})">Update</button>`;
+}else{
+html+=`<button onclick="addToCart(${p.id})">Add to Cart</button>`;
+}
+html+=`</div>`;
+});
+document.getElementById('products').innerHTML=html;
+}
 
-  function showProducts(isAdmin) {
-    let html = '';
-    products.forEach(p => {
-      html += `<div class="product">
-        Name: <input id="name-${p.id}" value="${p.name}" ${isAdmin ? '' : 'disabled'}>
-        Price: <input id="price-${p.id}" value="${p.price}" ${isAdmin ? '' : 'disabled'}>`;
-      if(isAdmin) {
-        html += `<button onclick="updateProduct(${p.id})">Update</button>`;
-      }
-      html += `</div>`;
-    });
-    document.getElementById('products').innerHTML = html;
-  }
+function updateProduct(id){
+const name=document.getElementById(`name-${id}`).value;
+const price=document.getElementById(`price-${id}`).value;
+const product=products.find(p=>p.id===id);
+product.name=name;
+product.price=Number(price);
+localStorage.setItem('products',JSON.stringify(products));
+alert(`Product updated! ✅\nName: ${name}\nPrice: ${price}`);
+}
 
-  function updateProduct(id) {
-    const name = document.getElementById(`name-${id}`).value;
-    const price = document.getElementById(`price-${id}`).value;
-    const product = products.find(p => p.id === id);
-    product.name = name;
-    product.price = price;
+// CART FUNCTIONS
+const cartItemsContainer=document.getElementById('cartItems');
+const cartTotalEl=document.getElementById('cartTotal');
 
-    localStorage.setItem('products', JSON.stringify(products));
-    alert(`Product updated! ✅\nName: ${name}\nPrice: ${price}`);
-  }
+function addToCart(id){
+const prod=products.find(x=>x.id===id);
+if(!cart[id]) cart[id]={...prod,qty:0};
+cart[id].qty++;
+showCart();
+}
 
-  function searchProducts() {
-    const term = document.getElementById('searchBox').value.toLowerCase();
-    const filtered = products.filter(p => p.name.toLowerCase().includes(term));
-    let html = '';
-    filtered.forEach(p => {
-      html += `<div class="product">
-        Name: <input id="name-${p.id}" value="${p.name}" disabled>
-        Price: <input id="price-${p.id}" value="${p.price}" disabled>
-      </div>`;
-    });
-    document.getElementById('products').innerHTML = html;
-  }
+function updateQty(id,change){
+if(cart[id]){
+cart[id].qty+=change;
+if(cart[id].qty<=0) delete cart[id];
+showCart();
+}
+}
+
+function showCart(){
+cartItemsContainer.innerHTML='';
+let total=0;
+for(const key in cart){
+const item=cart[key];
+total+=item.price*item.qty;
+const div=document.createElement('div');
+div.className='cart-item';
+div.innerHTML=`<span>${item.name} x ${item.qty} - ৳${item.price*item.qty}</span>
+<div class="qty-controls">
+<button onclick="updateQty(${item.id},-1)">-</button>
+<button onclick="updateQty(${item.id},1)">+</button>
+<button onclick="removeItem(${item.id})">Remove</button>
+</div>`;
+cartItemsContainer.appendChild(div);
+}
+cartTotalEl.textContent=total;
+}
+
+function removeItem(id){delete cart[id];showCart();}
+
+// CHECKOUT
+const checkoutBtn=document.getElementById('checkoutBtn');
+const checkoutModal=document.getElementById('checkoutModal');
+const cancelCheckout=document.getElementById('cancelCheckout');
+const checkoutForm=document.getElementById('checkoutForm');
+const nextToPayment=document.getElementById('nextToPayment');
+const checkoutStep1=document.getElementById('checkoutStep1');
+const checkoutStep2=document.getElementById('checkoutStep2');
+const messageEl=document.getElementById('message');
+
+checkoutBtn.addEventListener('click',()=>{
+if(Object.keys(cart).length===0){alert('Your cart is empty!');return;}
+checkoutModal.style.display='flex';
+checkoutStep1.style.display='block';
+checkoutStep2.style.display='none';
+messageEl.innerText='';
+});
+
+cancelCheckout.addEventListener('click',()=>{checkoutModal.style.display='none';});
+
+nextToPayment.addEventListener('click',()=>{
+if(!checkoutForm.name.value || !checkoutForm.address.value){
+alert('সব ফিল্ড পূরণ করো!');
+return;
+}
+checkoutStep1.style.display='none';
+checkoutStep2.style.display='block';
+});
+
+function placeOrder(){
+const name=document.getElementById('cardName').value;
+const number=document.getElementById('cardNumber').value;
+const expiry=document.getElementById('expiry').value;
+const cvv=document.getElementById('cvv').value;
+
+if(!name||!number||!expiry||!cvv){
+messageEl.innerText='সব ফিল্ড পূরণ করো!';
+messageEl.style.color='red';
+return;
+}
+
+if(number.length!==16||cvv.length!==3){
+messageEl.innerText='কার্ড নাম্বার বা CVV ভুল!';
+messageEl.style.color='red';
+return;
+}
+
+alert(`ধন্যবাদ ${checkoutForm.name.value}! আপনার অর্ডার নেওয়া হয়েছে।`);
+cart={};
+showCart();
+checkoutModal.style.display='none';
+checkoutForm.reset();
+document.getElementById('cardName').value='';
+document.getElementById('cardNumber').value='';
+document.getElementById('expiry').value='';
+document.getElementById('cvv').value='';
+}
 </script>
-
 </body>
 </html>
