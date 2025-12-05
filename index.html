@@ -59,7 +59,6 @@
 </footer>
 
 <script>
-  // Products - Customize as needed
   const PRODUCTS = [
     {id:1,title:'Rice 5kg',price:600},
     {id:2,title:'Cooking Oil 1L',price:250},
@@ -73,9 +72,7 @@
   const productsContainer = document.getElementById('products');
   const cartItemsContainer = document.getElementById('cartItems');
   const cartTotalEl = document.getElementById('cartTotal');
-  const cartBox = document.getElementById('cartBox');
 
-  // Render Products
   PRODUCTS.forEach(p=>{
     const card = document.createElement('div');
     card.className='card';
@@ -115,7 +112,6 @@
     showCart();
   }
 
-  // Checkout
   const checkoutBtn=document.getElementById('checkoutBtn');
   const checkoutModal=document.getElementById('checkoutModal');
   const cancelCheckout=document.getElementById('cancelCheckout');
@@ -132,15 +128,12 @@
     e.preventDefault();
     const name=e.target.name.value;
     alert(`ধন্যবাদ ${name}! আপনার অর্ডার নেওয়া হয়েছে (ডেমো)`);
-    // Reset cart
     for(const key in cart) delete cart[key];
     showCart();
     checkoutModal.style.display='none';
     checkoutForm.reset();
   });
-
 </script>
 
 </body>
 </html>
-
