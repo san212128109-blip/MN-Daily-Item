@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MN Daily Items - Free Demo</title>
+  <style>
+    body{font-family:sans-serif;margin:0;padding:0;background:#f7f7fb;color:#0f172a;}
+    header{background:#06b6d4;color:white;padding:18px;text-align:center;}
+    header h1{margin:0;font-size:24px;}
+    .container{max-width:1100px;margin:20px auto;padding:0 16px;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;}
+    .card{background:white;border-radius:12px;padding:14px;box-shadow:0 6px 14px rgba(2,6,23,0.06);}
+    .product-img{height:160px;background:#eef2ff;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+    .product-title{font-weight:600;margin:6px 0;}
+    .product-price{color:#0ea5a4;font-weight:700;}
+    button{background:#0ea5a4;color:white;border:0;padding:8px 12px;border-radius:8px;cursor:pointer;}
+    .cart{position:fixed;right:18px;bottom:18px;width:300px;max-width:94%;background:white;padding:12px;border-radius:12px;box-shadow:0 6px 14px rgba(2,6,23,0.1);}
+    .cart h3{margin:0 0 10px 0;}
+    .cart-item{display:flex;justify-content:space-between;margin-bottom:8px;}
+    footer{text-align:center;padding:20px;color:#475569;}
+    #checkoutModal{position:fixed;inset:0;background:rgba(2,6,23,0.5);display:none;align-items:center;justify-content:center;padding:20px;}
+    #checkoutModal .modal-content{background:white;padding:20px;border-radius:12px;max-width:400px;width:100%;}
+    input{padding:8px;width:100%;margin-bottom:10px;border-radius:8px;border:1px solid #ccc;}
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>MN Daily Items - Free Demo</h1>
+</header>
+
+<main class="container">
+  <h2>Products</h2>
+  <div class="grid" id="products"></div>
+</main>
+
+<div class="cart" id="cartBox">
+  <h3>Cart</h3>
+  <div id="cartItems"></div>
+  <div><strong>Total: ৳<span id="cartTotal">0</span></strong></div>
+  <button id="checkoutBtn">Checkout</button>
+</div>
+
+<div id="checkoutModal">
+  <div class="modal-content">
+    <h3>Checkout</h3>
+    <form id="checkoutForm">
+      <input type="text" name="name" placeholder="Your Name" required>
+      <input type="text" name="address" placeholder="Address" required>
+      <button type="submit">Place Order (Demo)</button>
+      <button type="button" id="cancelCheckout">Cancel</button>
+    </form>
+  </div>
+</div>
+
+<footer>
+  Built with ❤️ — MN Daily Items Demo.
+</footer>
+
+<script>
+  // Products - Customize as needed
+  const PRODUCTS = [
+    {id:1,title:'Rice 5kg',price:600},
+    {id:2,title:'Cooking Oil 1L',price:250},
+    {id:3,title:'Sugar 2kg',price:180},
+    {id:4,title:'Salt 1kg',price:50},
+    {id:5,title:'Flour 2kg',price:120}
+  ];
+
+  const cart = {};
+
+  const productsContainer = document.getElementById('products');
+  const cartItemsContainer = document.getElementById('cartItems');
+  const cartTotalEl = document.getElementById('cartTotal');
+  const cartBox = document.getElementById('cartBox');
+
+  // Render Products
+  PRODUCTS.forEach(p=>{
+    const card = document.createElement('div');
+    card.className='card';
+    card.innerHTML=`
+      <div class="product-img">${p.title}</div>
+      <div class="product-title">${p.title}</div>
+      <div class="product-price">৳${p.price}</div>
+      <button onclick="addToCart(${p.id})">Add to Cart</button>
+    `;
+    productsContainer.appendChild(card);
+  });
+
+  function addToCart(id){
+    const prod = PRODUCTS.find(x=>x.id===id);
+    if(!cart[id]) cart[id]={...prod,qty:0};
+    cart[id].qty++;
+    showCart();
+  }
+
+  function showCart(){
+    cartItemsContainer.innerHTML='';
+    let total=0;
+    for(const key in cart){
+      const item=cart[key];
+      total+=item.price*item.qty;
+      const div=document.createElement('div');
+      div.className='cart-item';
+      div.innerHTML=`${item.title} x ${item.qty} - ৳${item.price*item.qty}
+        <button onclick="removeItem(${item.id})">Remove</button>`;
+      cartItemsContainer.appendChild(div);
+    }
+    cartTotalEl.textContent=total;
+  }
+
+  function removeItem(id){
+    delete cart[id];
+    showCart();
+  }
+
+  // Checkout
+  const checkoutBtn=document.getElementById('checkoutBtn');
+  const checkoutModal=document.getElementById('checkoutModal');
+  const cancelCheckout=document.getElementById('cancelCheckout');
+  const checkoutForm=document.getElementById('checkoutForm');
+
+  checkoutBtn.addEventListener('click',()=>{
+    if(Object.keys(cart).length===0){ alert('Your cart is empty!'); return; }
+    checkoutModal.style.display='flex';
+  });
+
+  cancelCheckout.addEventListener('click',()=>{checkoutModal.style.display='none';});
+
+  checkoutForm.addEventListener('submit',e=>{
+    e.preventDefault();
+    const name=e.target.name.value;
+    alert(`ধন্যবাদ ${name}! আপনার অর্ডার নেওয়া হয়েছে (ডেমো)`);
+    // Reset cart
+    for(const key in cart) delete cart[key];
+    showCart();
+    checkoutModal.style.display='none';
+    checkoutForm.reset();
+  });
+
+</script>
+
+</body>
+</html>
+
