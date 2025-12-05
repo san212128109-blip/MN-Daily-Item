@@ -1,0 +1,21 @@
+function showCart(){
+    cartItemsContainer.innerHTML='';
+    let total=0;
+    for(const key in cart){
+        const item=cart[key];
+        total+=item.price*item.qty;
+        const div=document.createElement('div');
+        div.className='cart-item';
+        div.innerHTML=`<span>${item.name} x ${item.qty} - ৳${item.price*item.qty}</span>
+        <div class="qty-controls">
+            <button onclick="updateQty(${item.id},-1)">-</button>
+            <button onclick="updateQty(${item.id},1)">+</button>
+            <button onclick="removeItem(${item.id})">Remove</button>
+        </div>`;
+        cartItemsContainer.appendChild(div);
+    }
+    const orderFee = 70; // fixed order confirmation fee
+    const totalWithFee = total + orderFee;
+    cartTotalEl.textContent = totalWithFee + " (includes ৳70 order confirmation fee, home delivery free)";
+}
+
