@@ -1,21 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bitore - Customer/Admin</title>
-<style>
-  body { font-family: Arial, sans-serif; background-color: #f7f7f7; padding: 20px;}
-  .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
-  h2 { text-align: center; color: #ff6f61;}
-  input, select { width: 100%; padding: 10px; margin: 8px 0; border-radius: 6px; border: 1px solid #ccc;}
-  button { width: 100%; padding: 12px; background-color: #ff6f61; color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; font-size: 16px;}
-  button:hover { background-color: #e55b50;}
-  .product { margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
-  .message { text-align: center; margin-top: 10px; color: green; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>সকল পণ্য</title>
+  <meta name="description" content="MN Daily Item - সকল পণ্য ও তথ্যের জন্য ওয়েবসাইট।">
+  <meta name="keywords" content="সকল পণ্য, Daily Item, পণ্য, খবর">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="MN Daily Item">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Store",
+    "name": "MN Daily Item",
+    "description": "সকল পণ্য ও খবর সংক্রান্ত ওয়েবসাইট",
+    "url": "https://san212128109-blip.github.io/MN-Daily-Item/"
+  }
+  </script>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f7f7f7; padding: 20px;}
+    .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom:20px;}
+    h2 { text-align: center; color: #ff6f61;}
+    input, select { width: 100%; padding: 10px; margin: 8px 0; border-radius: 6px; border: 1px solid #ccc;}
+    button { width: 100%; padding: 12px; background-color: #ff6f61; color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; font-size: 16px;}
+    button:hover { background-color: #e55b50;}
+    .product { margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
+    .message { text-align: center; margin-top: 10px; color: green; }
+    #intro { max-width:600px; margin:auto; background:#fff; padding:15px; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.1); margin-bottom:20px;}
+    footer { text-align:center; margin-top:30px; color:#555;}
+  </style>
 </head>
 <body>
+
+<div id="intro">
+  <h2>স্বাগতম MN Daily Item-এ</h2>
+  <p>এখানে আপনি আমাদের সকল পণ্য দেখতে পাবেন। আমরা দৈনন্দিন নতুন পণ্য যুক্ত করি। Customer বা Admin হিসেবে লগইন করে পণ্য দেখুন এবং পরিবর্তন করুন।</p>
+</div>
 
 <div class="container" id="loginContainer">
   <h2>Login</h2>
@@ -31,8 +51,15 @@
 
 <div class="container" id="userPanel" style="display:none;">
   <h2>Product List</h2>
+  <div>
+    <input type="text" id="searchBox" placeholder="পণ্যের নাম লিখুন..." onkeyup="searchProducts()">
+  </div>
   <div id="products"></div>
 </div>
+
+<footer>
+  &copy; 2025 MN Daily Item. All rights reserved.
+</footer>
 
 <script>
   // Admin credentials
@@ -65,7 +92,6 @@
         msg.style.color = 'red';
       }
     } else {
-      // Customer login (no password required for demo)
       document.getElementById('loginContainer').style.display = 'none';
       document.getElementById('userPanel').style.display = 'block';
       showProducts(false);
@@ -93,10 +119,21 @@
     product.name = name;
     product.price = price;
 
-    // Save to LocalStorage
     localStorage.setItem('products', JSON.stringify(products));
-
     alert(`Product updated! ✅\nName: ${name}\nPrice: ${price}`);
+  }
+
+  function searchProducts() {
+    const term = document.getElementById('searchBox').value.toLowerCase();
+    const filtered = products.filter(p => p.name.toLowerCase().includes(term));
+    let html = '';
+    filtered.forEach(p => {
+      html += `<div class="product">
+        Name: <input id="name-${p.id}" value="${p.name}" disabled>
+        Price: <input id="price-${p.id}" value="${p.price}" disabled>
+      </div>`;
+    });
+    document.getElementById('products').innerHTML = html;
   }
 </script>
 
