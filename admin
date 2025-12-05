@@ -1,84 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel - Bitore Style</title>
-  <style>
-    body { font-family: Arial, sans-serif; background-color: #f7f7f7; padding: 20px;}
-    .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
-    h2 { text-align: center; color: #ff6f61;}
-    input { width: 100%; padding: 10px; margin: 8px 0; border-radius: 6px; border: 1px solid #ccc;}
-    button { width: 100%; padding: 12px; background-color: #ff6f61; color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; font-size: 16px;}
-    button:hover { background-color: #e55b50;}
-    .product { margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
-    .message { text-align: center; margin-top: 10px; color: green; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bitore - Customer/Admin</title>
+<style>
+  body { font-family: Arial, sans-serif; background-color: #f7f7f7; padding: 20px;}
+  .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
+  h2 { text-align: center; color: #ff6f61;}
+  input, select { width: 100%; padding: 10px; margin: 8px 0; border-radius: 6px; border: 1px solid #ccc;}
+  button { width: 100%; padding: 12px; background-color: #ff6f61; color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; font-size: 16px;}
+  button:hover { background-color: #e55b50;}
+  .product { margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
+  .message { text-align: center; margin-top: 10px; color: green; }
+</style>
 </head>
 <body>
-  <div class="container" id="loginContainer">
-    <h2>Admin Login</h2>
-    <input type="text" id="username" placeholder="Username">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-    <div class="message" id="loginMessage"></div>
-  </div>
 
-  <div class="container" id="adminPanel" style="display:none;">
-    <h2>Product List</h2>
-    <div id="products"></div>
-  </div>
+<div class="container" id="loginContainer">
+  <h2>Login</h2>
+  <select id="role">
+    <option value="customer">Customer</option>
+    <option value="admin">Admin</option>
+  </select>
+  <input type="text" id="username" placeholder="Username">
+  <input type="password" id="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+  <div class="message" id="loginMessage"></div>
+</div>
 
-  <script>
-    // Updated admin credential
-    const adminUser = "admin";
-    const adminPass = "nafis128!@*";
+<div class="container" id="userPanel" style="display:none;">
+  <h2>Product List</h2>
+  <div id="products"></div>
+</div>
 
-    // Sample products
-    let products = [
-      {id: 1, name: "পণ্য ১", price: 100},
-      {id: 2, name: "পণ্য ২", price: 200},
-      {id: 3, name: "পণ্য ৩", price: 300},
-    ];
+<script>
+  // Admin credentials
+  const adminUser = "admin";
+  const adminPass = "nafis128!@*";
 
-    function login() {
-      const user = document.getElementById('username').value;
-      const pass = document.getElementById('password').value;
-      const msg = document.getElementById('loginMessage');
+  // Sample products
+  let products = [
+    {id: 1, name: "পণ্য ১", price: 100},
+    {id: 2, name: "পণ্য ২", price: 200},
+    {id: 3, name: "পণ্য ৩", price: 300},
+  ];
 
+  function login() {
+    const role = document.getElementById('role').value;
+    const user = document.getElementById('username').value;
+    const pass = document.getElementById('password').value;
+    const msg = document.getElementById('loginMessage');
+
+    if(role === "admin") {
       if(user === adminUser && pass === adminPass){
         document.getElementById('loginContainer').style.display = 'none';
-        document.getElementById('adminPanel').style.display = 'block';
-        showProducts();
+        document.getElementById('userPanel').style.display = 'block';
+        showProducts(true);
       } else {
         msg.innerText = "Username বা Password ভুল!";
         msg.style.color = 'red';
       }
+    } else {
+      // Customer login (no password required for demo)
+      document.getElementById('loginContainer').style.display = 'none';
+      document.getElementById('userPanel').style.display = 'block';
+      showProducts(false);
     }
+  }
 
-    function showProducts() {
-      let html = '';
-      products.forEach(p => {
-        html += `
-          <div class="product">
-            Name: <input value="${p.name}" id="name-${p.id}">
-            Price: <input value="${p.price}" id="price-${p.id}">
-            <button onclick="updateProduct(${p.id})">Update</button>
-          </div>
-        `;
-      });
-      document.getElementById('products').innerHTML = html;
-    }
+  function showProducts(isAdmin) {
+    let html = '';
+    products.forEach(p => {
+      html += `<div class="product">
+        Name: <input value="${p.name}" ${isAdmin ? '' : 'disabled'}>
+        Price: <input value="${p.price}" ${isAdmin ? '' : 'disabled'}>`;
+      if(isAdmin) {
+        html += `<button onclick="updateProduct(${p.id})">Update</button>`;
+      }
+      html += `</div>`;
+    });
+    document.getElementById('products').innerHTML = html;
+  }
 
-    function updateProduct(id) {
-      const name = document.getElementById(`name-${id}`).value;
-      const price = document.getElementById(`price-${id}`).value;
-      const product = products.find(p => p.id === id);
-      product.name = name;
-      product.price = price;
+  function updateProduct(id) {
+    const name = document.getElementById(`name-${id}`).value;
+    const price = document.getElementById(`price-${id}`).value;
+    const product = products.find(p => p.id === id);
+    product.name = name;
+    product.price = price;
+    alert(`Product updated! ✅\nName: ${name}\nPrice: ${price}`);
+  }
+</script>
 
-      alert(`Product updated! ✅\nName: ${name}\nPrice: ${price}`);
-    }
-  </script>
 </body>
 </html>
