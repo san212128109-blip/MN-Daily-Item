@@ -3,17 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MN Daily Items - Full</title>
+<title>MN Daily Items</title>
 <style>
 body{font-family:Arial,sans-serif;margin:0;padding:0;background:#f7f7f7;}
 header{background:#06b6d4;color:white;padding:18px;text-align:center;}
 header h1{margin:0;font-size:24px;}
-.container{max-width:500px;margin:20px auto;background:white;padding:20px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.container{max-width:600px;margin:20px auto;background:white;padding:20px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
 h2{text-align:center;color:#ff6f61;}
 input,select{width:100%;padding:10px;margin:8px 0;border-radius:6px;border:1px solid #ccc;}
 button{width:100%;padding:12px;background-color:#ff6f61;color:white;border:none;border-radius:6px;cursor:pointer;margin-top:10px;font-size:16px;}
 button:hover{background-color:#e55b50;}
-.product{margin-bottom:15px;padding:10px;border:1px solid #ddd;border-radius:8px;}
+.product{display:flex;align-items:center;margin-bottom:15px;padding:10px;border:1px solid #ddd;border-radius:8px;}
+.product img{width:80px;height:80px;object-fit:cover;border-radius:8px;margin-right:10px;}
+.product-details{flex:1;}
 .cart{position:fixed;right:18px;bottom:18px;width:300px;max-width:94%;background:white;padding:12px;border-radius:12px;box-shadow:0 6px 14px rgba(2,6,23,0.1);}
 .cart h3{margin:0 0 10px 0;}
 .cart-item{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
@@ -21,6 +23,7 @@ button:hover{background-color:#e55b50;}
 #checkoutModal{position:fixed;inset:0;background:rgba(2,6,23,0.5);display:none;align-items:center;justify-content:center;padding:20px;}
 #checkoutModal .modal-content{background:white;padding:20px;border-radius:12px;max-width:400px;width:100%;}
 .message{text-align:center;margin-top:12px;color:green;}
+#searchBox{margin-bottom:10px;padding:8px;width:100%;border-radius:6px;border:1px solid #ccc;}
 </style>
 </head>
 <body>
@@ -41,6 +44,7 @@ button:hover{background-color:#e55b50;}
 
 <div class="container" id="userPanel" style="display:none;">
 <h2>Products</h2>
+<input type="text" id="searchBox" placeholder="Search products..." onkeyup="searchProducts()">
 <div id="products"></div>
 </div>
 
@@ -80,13 +84,14 @@ button:hover{background-color:#e55b50;}
 const adminUser="admin";
 const adminPass="nafis128!@*";
 
-// Load products from LocalStorage or default
+// Default products with images
 let products=JSON.parse(localStorage.getItem('products'))||[
-{id:1,name:"পণ্য ১",price:100},
-{id:2,name:"পণ্য ২",price:200},
-{id:3,name:"পণ্য ৩",price:300},
+{id:1,name:"পণ্য ১",price:100,img:"https://via.placeholder.com/80"},
+{id:2,name:"পণ্য ২",price:200,img:"https://via.placeholder.com/80"},
+{id:3,name:"পণ্য ৩",price:300,img:"https://via.placeholder.com/80"},
 ];
 
+// Cart
 let cart={};
 
 function login(){
@@ -112,28 +117,33 @@ showProducts(false);
 }
 }
 
+// Show products
 function showProducts(isAdmin){
+const searchTerm=document.getElementById('searchBox').value.toLowerCase();
 let html='';
 products.forEach(p=>{
+if(!p.name.toLowerCase().includes(searchTerm)) return;
 html+=`<div class="product">
-Name: <input id="name-${p.id}" value="${p.name}" ${isAdmin?'':'disabled'}>
-Price: <input id="price-${p.id}" value="${p.price}" ${isAdmin?'':'disabled'}>`;
-if(isAdmin){
-html+=`<button onclick="updateProduct(${p.id})">Update</button>`;
-}else{
-html+=`<button onclick="addToCart(${p.id})">Add to Cart</button>`;
-}
+<img src="${p.img}" alt="${p.name}">
+<div class="product-details">
+Name: <input id="name-${p.id}" value="${p.name}" ${isAdmin?'':'disabled'}><br>
+Price: <input id="price-${p.id}" value="${p.price}" ${isAdmin?'':'disabled'}>
+</div>`;
+if(isAdmin){html+=`<button onclick="updateProduct(${p.id})">Update</button>`;}
+else{html+=`<button onclick="addToCart(${p.id})">Add to Cart</button>`;}
 html+=`</div>`;
 });
 document.getElementById('products').innerHTML=html;
 }
 
+function searchProducts(){showProducts(document.getElementById('role').value==='admin');}
+
+// Update product
 function updateProduct(id){
 const name=document.getElementById(`name-${id}`).value;
 const price=document.getElementById(`price-${id}`).value;
 const product=products.find(p=>p.id===id);
-product.name=name;
-product.price=Number(price);
+product.name=name; product.price=Number(price);
 localStorage.setItem('products',JSON.stringify(products));
 alert(`Product updated! ✅\nName: ${name}\nPrice: ${price}`);
 }
@@ -199,10 +209,7 @@ messageEl.innerText='';
 cancelCheckout.addEventListener('click',()=>{checkoutModal.style.display='none';});
 
 nextToPayment.addEventListener('click',()=>{
-if(!checkoutForm.name.value || !checkoutForm.address.value){
-alert('সব ফিল্ড পূরণ করো!');
-return;
-}
+if(!checkoutForm.name.value || !checkoutForm.address.value){alert('সব ফিল্ড পূরণ করো!');return;}
 checkoutStep1.style.display='none';
 checkoutStep2.style.display='block';
 });
@@ -218,14 +225,13 @@ messageEl.innerText='সব ফিল্ড পূরণ করো!';
 messageEl.style.color='red';
 return;
 }
-
 if(number.length!==16||cvv.length!==3){
 messageEl.innerText='কার্ড নাম্বার বা CVV ভুল!';
 messageEl.style.color='red';
 return;
 }
 
-alert(`ধন্যবাদ ${checkoutForm.name.value}! আপনার অর্ডার নেওয়া হয়েছে।`);
+alert(`ধন্যবাদ ${checkoutForm.name.value}! আপনার অর্ডার নেওয়া হয়েছে।`);
 cart={};
 showCart();
 checkoutModal.style.display='none';
