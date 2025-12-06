@@ -1,140 +1,290 @@
-<!doctype html>
-<html lang="bn">
+
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MN Daily Items - how are you</title>
-  <style>
-    body{font-family:sans-serif;margin:0;padding:0;background:#f7f7fb;color:#0f172a;}
-    header{background:#06b6d4;color:white;padding:18px;text-align:center;}
-    header h1{margin:0;font-size:24px;}
-    .container{max-width:1100px;margin:20px auto;padding:0 16px;}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;}
-    .card{background:white;border-radius:12px;padding:14px;box-shadow:0 6px 14px rgba(2,6,23,0.06);}
-    .product-img{height:160px;background:#eef2ff;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
-    .product-title{font-weight:600;margin:6px 0;}
-    .product-price{color:#0ea5a4;font-weight:700;}
-    button{background:#0ea5a4;color:white;border:0;padding:8px 12px;border-radius:8px;cursor:pointer;}
-    .cart{position:fixed;right:18px;bottom:18px;width:300px;max-width:94%;background:white;padding:12px;border-radius:12px;box-shadow:0 6px 14px rgba(2,6,23,0.1);}
-    .cart h3{margin:0 0 10px 0;}
-    .cart-item{display:flex;justify-content:space-between;margin-bottom:8px;}
-    footer{text-align:center;padding:20px;color:#475569;}
-    #checkoutModal{position:fixed;inset:0;background:rgba(2,6,23,0.5);display:none;align-items:center;justify-content:center;padding:20px;}
-    #checkoutModal .modal-content{background:white;padding:20px;border-radius:12px;max-width:400px;width:100%;}
-    input{padding:8px;width:100%;margin-bottom:10px;border-radius:8px;border:1px solid #ccc;}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MN Daily Items</title>
+<style>
+body{margin:0;font-family:sans-serif;background:#f9f9f9;}
+header{display:flex;align-items:center;justify-content:space-between;padding:10px;background:#ff3f6c;color:white;flex-wrap:wrap;}
+header input{padding:5px;width:200px;max-width:100%;}
+header button{padding:5px 10px;margin:2px;}
+.hero-slider{width:100%;height:300px;overflow:hidden;position:relative;}
+.hero-slider img{width:100%;height:300px;object-fit:cover;transition:opacity 0.5s;}
+.categories{padding:20px;}
+.category-cards{display:flex;gap:10px;flex-wrap:wrap;}
+.category-card{flex:1;min-width:120px;background:#fff;padding:20px;text-align:center;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,0.1);box-sizing:border-box;}
+.products{padding:20px;}
+#productsList{display:flex;flex-wrap:wrap;gap:10px;}
+.productCard{border:1px solid #ccc;padding:10px;width:150px;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,0.1);box-sizing:border-box;}
+.checkout{padding:20px;background:#fff;margin:20px;}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);}
+.modal-content{background:white;padding:20px;margin:50px auto;width:300px;position:relative;box-sizing:border-box;}
+.close, .closeOTP, .closeAdmin{position:absolute;top:10px;right:10px;cursor:pointer;font-size:18px;font-weight:bold;}
+#adminPanel{padding:20px;background:#fff;margin:20px;}
+#adminProducts .productCard{width:200px;}
+button{cursor:pointer;}
+@media(max-width:768px){
+  .category-cards{flex-direction:column;}
+  #productsList{flex-direction:column;}
+  header{flex-direction:column;align-items:flex-start;}
+}
+</style>
 </head>
 <body>
 
 <header>
-  <h1>MN Daily Items -how are you</h1>
+  <div class="logo">MN Daily Items</div>
+  <input type="text" id="searchInput" placeholder="Search products...">
+  <div>
+    <button id="customerLoginBtnHeader">Customer Login</button>
+    <button id="adminLoginBtnHeader">Admin Login</button>
+  </div>
 </header>
 
-<main class="container">
-  <h2>Products</h2>
-  <div class="grid" id="products"></div>
-</main>
-
-<div class="cart" id="cartBox">
-  <h3>Cart</h3>
-  <div id="cartItems"></div>
-  <div><strong>Total: ৳<span id="cartTotal">0</span></strong></div>
-  <button id="checkoutBtn">Checkout</button>
+<div class="hero-slider">
+  <img id="sliderImg" src="https://via.placeholder.com/1200x300?text=Banner+1" alt="Banner">
 </div>
 
-<div id="checkoutModal">
+<section class="categories">
+  <h2>Categories</h2>
+  <div class="category-cards">
+    <div class="category-card" data-category="Staples">Staples</div>
+    <div class="category-card" data-category="Oils & Spices">Oils & Spices</div>
+    <div class="category-card" data-category="Beverages">Beverages</div>
+    <div class="category-card" data-category="Snacks">Snacks</div>
+    <div class="category-card" data-category="Household">Household</div>
+  </div>
+</section>
+
+<section class="products" id="customerPage" style="display:none;">
+  <h2>Featured Products</h2>
+  <div id="productsList"></div>
+</section>
+
+<section class="checkout" id="checkoutSection" style="display:none;">
+  <h3>Checkout</h3>
+  <p>Payment Number: <span id="paymentNumber"></span></p>
+  <p>Method: bKash / Nagad</p>
+</section>
+
+<!-- Customer Login Modal -->
+<div id="customerLoginModal" class="modal">
   <div class="modal-content">
-    <h3>Checkout</h3>
-    <form id="checkoutForm">
-      <input type="text" name="name" placeholder="Your Name" required>
-      <input type="text" name="address" placeholder="Address" required>
-      <button type="submit">Place Order (Demo)</button>
-      <button type="button" id="cancelCheckout">Cancel</button>
-    </form>
+    <span class="close">&times;</span>
+    <h3>Customer Login</h3>
+    <input type="text" id="customerPhone" placeholder="Enter phone number">
+    <button id="sendOTP">Send OTP</button>
   </div>
 </div>
 
-<footer>
-  Built with ❤️ — MN Daily Items Demo.
-</footer>
+<!-- OTP Verification Modal -->
+<div id="otpModal" class="modal">
+  <div class="modal-content">
+    <span class="closeOTP">&times;</span>
+    <h3>Enter OTP</h3>
+    <input type="text" id="otpInput" placeholder="Enter OTP">
+    <button id="verifyOTP">Verify OTP</button>
+  </div>
+</div>
+
+<!-- Admin Login Modal -->
+<div id="adminLoginModal" class="modal">
+  <div class="modal-content">
+    <span class="closeAdmin">&times;</span>
+    <h3>Admin Login</h3>
+    <input type="text" id="adminUser" placeholder="Username">
+    <input type="password" id="adminPass" placeholder="Password">
+    <button id="adminLoginBtn">Login</button>
+  </div>
+</div>
+
+<!-- Admin Panel -->
+<div id="adminPanel" style="display:none;">
+  <h2>Store Admin</h2>
+  <h3>Payment Number</h3>
+  <input type="text" id="adminPayment" placeholder="Enter bKash/Nagad Number">
+  <button id="savePayment">Save Number</button>
+
+  <h3>Add Product</h3>
+  <input type="text" id="prodName" placeholder="Product Name">
+  <input type="number" id="prodPrice" placeholder="Price">
+  <input type="text" id="prodImage" placeholder="Image URL">
+  <select id="prodCategory">
+    <option value="Staples">Staples</option>
+    <option value="Oils & Spices">Oils & Spices</option>
+    <option value="Beverages">Beverages</option>
+    <option value="Snacks">Snacks</option>
+    <option value="Household">Household</option>
+  </select>
+  <button id="addProductBtn">Add Product</button>
+
+  <h3>All Products</h3>
+  <div id="adminProducts"></div>
+</div>
 
 <script>
-  const PRODUCTS = [
-    {id:1,title:'show 1pice',price:600},
-    {id:2,title:'cat toy 1 pice',price:250},
-    {id:3,title:'baby toy 1 pice',price:180},
-    {id:4,title:'Salt 1kg',price:50},
-    {id:5,title:'Flour 2kg',price:120}
-  ];
+// Slider
+let sliderImages=["https://via.placeholder.com/1200x300?text=Banner+1","https://via.placeholder.com/1200x300?text=Banner+2","https://via.placeholder.com/1200x300?text=Banner+3"];
+let sliderIndex=0;
+setInterval(()=>{
+  const img=document.getElementById('sliderImg');
+  img.style.opacity=0;
+  setTimeout(()=>{img.src=sliderImages[sliderIndex];img.style.opacity=1;sliderIndex=(sliderIndex+1)%sliderImages.length;},200);
+},3000);
 
-  const cart = {};
+// Products
+let products=JSON.parse(localStorage.getItem('products'))||[];
 
-  const productsContainer = document.getElementById('products');
-  const cartItemsContainer = document.getElementById('cartItems');
-  const cartTotalEl = document.getElementById('cartTotal');
+// Demo OTP
+let currentOTP="";
 
-  PRODUCTS.forEach(p=>{
-    const card = document.createElement('div');
-    card.className='card';
-    card.innerHTML=`
-      <div class="product-img">${p.title}</div>
-      <div class="product-title">${p.title}</div>
-      <div class="product-price">৳${p.price}</div>
-      <button onclick="addToCart(${p.id})">Add to Cart</button>
-    `;
-    productsContainer.appendChild(card);
+// Customer Login
+const customerLoginBtnHeader=document.getElementById('customerLoginBtnHeader');
+const customerModal=document.getElementById('customerLoginModal');
+const closeModal=document.querySelector('.close');
+const sendOTP=document.getElementById('sendOTP');
+const customerPhoneInput=document.getElementById('customerPhone');
+
+const otpModal=document.getElementById('otpModal');
+const closeOTP=document.querySelector('.closeOTP');
+const otpInput=document.getElementById('otpInput');
+const verifyOTP=document.getElementById('verifyOTP');
+
+customerLoginBtnHeader.onclick=()=>{
+  customerModal.style.display='block';
+  document.body.style.overflow='hidden';
+}
+closeModal.onclick=()=>{
+  customerModal.style.display='none';
+  document.body.style.overflow='auto';
+}
+closeOTP.onclick=()=>{
+  otpModal.style.display='none';
+  document.body.style.overflow='auto';
+}
+
+sendOTP.onclick=()=>{
+  const phone=customerPhoneInput.value.trim();
+  if(phone){
+    currentOTP=Math.floor(100000 + Math.random()*900000).toString(); // 6-digit OTP
+    alert("Your OTP is: "+currentOTP); // Demo OTP
+    customerModal.style.display='none';
+    otpModal.style.display='block';
+    document.body.style.overflow='hidden';
+  } else alert("Enter phone number");
+}
+
+verifyOTP.onclick=()=>{
+  if(otpInput.value===currentOTP){
+    localStorage.setItem('customerPhone',customerPhoneInput.value);
+    otpModal.style.display='none';
+    document.body.style.overflow='auto';
+    loadCustomerPage();
+    alert("Login successful!");
+  } else alert("Incorrect OTP");
+}
+
+// Auto login
+if(localStorage.getItem('customerPhone')){loadCustomerPage();}
+function loadCustomerPage(){
+  document.getElementById('customerPage').style.display='block';
+  document.getElementById('checkoutSection').style.display='block';
+  loadProducts();
+  document.getElementById('paymentNumber').innerText=localStorage.getItem('paymentNumber')||'Not set';
+}
+
+// Load products
+function loadProducts(filterCategory){
+  const list=document.getElementById('productsList');list.innerHTML='';
+  let filtered=products;
+  if(filterCategory)filtered=products.filter(p=>p.category===filterCategory);
+  filtered.forEach(p=>{list.innerHTML+=`<div class="productCard">
+      <img src="${p.image}" width="100"><br>
+      <b>${p.name}</b> - ৳${p.price}<br>
+      Category: ${p.category}
+    </div>`;});
+}
+
+// Search
+document.getElementById('searchInput').addEventListener('input',function(){
+  const val=this.value.toLowerCase();
+  const filtered=products.filter(p=>p.name.toLowerCase().includes(val)||p.category.toLowerCase().includes(val));
+  const list=document.getElementById('productsList');list.innerHTML='';
+  filtered.forEach(p=>{list.innerHTML+=`<div class="productCard">
+      <img src="${p.image}" width="100"><br>
+      <b>${p.name}</b> - ৳${p.price}<br>
+      Category: ${p.category}
+    </div>`;});
+});
+
+// Category filter
+document.querySelectorAll('.category-card').forEach(card=>{card.onclick=()=>loadProducts(card.getAttribute('data-category'));});
+
+// Admin Login
+const adminLoginBtnHeader=document.getElementById('adminLoginBtnHeader');
+const adminModal=document.getElementById('adminLoginModal');
+const closeAdmin=document.querySelector('.closeAdmin');
+const adminLoginBtn=document.getElementById('adminLoginBtn');
+
+adminLoginBtnHeader.onclick=()=>{adminModal.style.display='block';document.body.style.overflow='hidden';}
+closeAdmin.onclick=()=>{adminModal.style.display='none';document.body.style.overflow='auto';}
+adminLoginBtn.onclick=()=>{
+  const username=document.getElementById('adminUser').value;
+  const password=document.getElementById('adminPass').value;
+  if(username==="Daily"&&password==="nafis128!@*"){
+    adminModal.style.display='none';
+    document.body.style.overflow='auto';
+    document.getElementById('adminPanel').style.display='block';
+    loadAdminProducts();
+  } else alert("Wrong credentials");
+}
+
+// Admin panel
+const savePayment=document.getElementById('savePayment');
+const adminPayment=document.getElementById('adminPayment');
+const addProductBtn=document.getElementById('addProductBtn');
+const adminProducts=document.getElementById('adminProducts');
+
+savePayment.onclick=()=>{
+  const val=adminPayment.value.trim();
+  if(val){localStorage.setItem('paymentNumber',val);alert("Saved!");loadCustomerPage();}else alert("Enter number");
+}
+
+addProductBtn.onclick=()=>{
+  const name=document.getElementById('prodName').value;
+  const price=document.getElementById('prodPrice').value;
+  const image=document.getElementById('prodImage').value;
+  const category=document.getElementById('prodCategory').value;
+  if(name&&price&&category){
+    products.push({name,price,image,category});
+    localStorage.setItem('products',JSON.stringify(products));
+    loadAdminProducts();
+    loadCustomerPage();
+    alert("Product added!");
+  } else alert("Fill all fields");
+}
+
+function loadAdminProducts(){
+  adminProducts.innerHTML='';
+  products.forEach((p,i)=>{
+    adminProducts.innerHTML+=`<div class="productCard">
+      <img src="${p.image}" width="100"><br>
+      <b>${p.name}</b> - ৳${p.price}<br>
+      Category: ${p.category}
+      <button onclick="deleteProduct(${i})">Delete</button>
+    </div>`;
   });
+}
 
-  function addToCart(id){
-    const prod = PRODUCTS.find(x=>x.id===id);
-    if(!cart[id]) cart[id]={...prod,qty:0};
-    cart[id].qty++;
-    showCart();
-  }
-
-  function showCart(){
-    cartItemsContainer.innerHTML='';
-    let total=0;
-    for(const key in cart){
-      const item=cart[key];
-      total+=item.price*item.qty;
-      const div=document.createElement('div');
-      div.className='cart-item';
-      div.innerHTML=`${item.title} x ${item.qty} - ৳${item.price*item.qty}
-        <button onclick="removeItem(${item.id})">Remove</button>`;
-      cartItemsContainer.appendChild(div);
-    }
-    cartTotalEl.textContent=total;
-  }
-
-  function removeItem(id){
-    delete cart[id];
-    showCart();
-  }
-
-  const checkoutBtn=document.getElementById('checkoutBtn');
-  const checkoutModal=document.getElementById('checkoutModal');
-  const cancelCheckout=document.getElementById('cancelCheckout');
-  const checkoutForm=document.getElementById('checkoutForm');
-
-  checkoutBtn.addEventListener('click',()=>{
-    if(Object.keys(cart).length===0){ alert('Your cart is empty!'); return; }
-    checkoutModal.style.display='flex';
-  });
-
-  cancelCheckout.addEventListener('click',()=>{checkoutModal.style.display='none';});
-
-  checkoutForm.addEventListener('submit',e=>{
-    e.preventDefault();
-    const name=e.target.name.value;
-    alert(`ধন্যবাদ ${name}! আপনার অর্ডার নেওয়া হয়েছে (ডেমো)`);
-    for(const key in cart) delete cart[key];
-    showCart();
-    checkoutModal.style.display='none';
-    checkoutForm.reset();
-  });
+function deleteProduct(i){
+  products.splice(i,1);
+  localStorage.setItem('products',JSON.stringify(products));
+  loadAdminProducts();
+  loadCustomerPage();
+}
+window.deleteProduct=deleteProduct;
 </script>
-
 </body>
 </html>
-
