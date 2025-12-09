@@ -1,0 +1,19 @@
+MN-Daily-Items/
+├── backend/
+│   ├── config/          // DB Connection, .env Setup
+│   ├── controllers/     // Logic for API routes (Product, User, Order)
+│   ├── middleware/      // Auth, Error Handler
+│   ├── models/          // MongoDB Schemas (Product, User, Order, Category)
+│   ├── routes/          // API Routes (api/products, api/users)
+│   ├── uploads/         // For image storage (Multer)
+│   └── server.js        // Main entry file
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── components/  // Reusable components (Header, Footer, Carousel, Product Card)
+│   │   ├── constants/   // Global variables/settings
+│   │   ├── contexts/    // State Management (CartContext, AuthContext)
+│   │   ├── pages/       // Main pages (Home, Product, Cart, Login, Admin)
+│   │   ├── styles/      // Global CSS/SCSS
+│   │   └── App.js       // Main React App
+└── .env                 // Environment variables
