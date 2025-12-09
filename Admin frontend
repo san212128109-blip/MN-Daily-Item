@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin Login - MN Daily Items</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main style="max-width:420px;margin:50px auto;padding:20px;background:#fff;border-radius:8px;">
+    <h2>Admin Login</h2>
+    <form id="adminLogin">
+      <input name="user" placeholder="Admin user" required /><br/>
+      <input type="password" name="pass" placeholder="Password" required /><br/>
+      <button type="submit">Login</button>
+    </form>
+    <p style="margin-top:12px;"><a href="/">Back to site</a></p>
+  </main>
+
+  <script>
+    document.getElementById('adminLogin').addEventListener('submit', async e => {
+      e.preventDefault();
+      const f = new FormData(e.target);
+      const body = { user: f.get('user'), pass: f.get('pass') };
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body)
+      });
+      const j = await res.json();
+      if (j.error) alert(j.error);
+      else { location.href = '/admin.html'; }
+    });
+  </script>
+</body>
+</html>
