@@ -1,0 +1,19 @@
+MN-Daily-Item/
+│
+├── index.html          ← Homepage
+├── categories.html     ← Category page
+├── product.html        ← Product page
+├── cart.html           ← Cart page
+├── login.html          ← Login/Register (dummy)
+├── admin.html          ← Admin Panel (static)
+│
+├── css/
+│   └── style.css       ← সব CSS এখানে
+│
+├── js/
+│   ├── main.js         ← Homepage & search logic
+│   ├── cart.js         ← Cart functionality
+│   └── admin.js        ← Admin Panel logic
+│
+└── images/
+    └── (সকল product/category images)
